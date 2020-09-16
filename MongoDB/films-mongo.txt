@@ -1,0 +1,55 @@
+1. Подключись к новой Базе Данных.
+
+  use films-mongo
+
+2. Создай коллекции: films, actors, directors(режиссёры).
+
+   db.createCollection('films')
+   db.createCollection('actors')
+   db.createCollection('directors')
+
+3. У каждого фильма должны содержаться данные об участвующих актерах, режиссере. Каждый актер мог сниматься в нескольких фильмах, а каждый режиссер мог снимать несколько фильмов.
+
+   db.films.insert({"film":"Утомленные солнцем",     "actors":["Дапкунайте","Михалков","Меньшиков"],"director":"Михалков"})
+   db.films.insert({"film":"Интердевочка","actors":["Дапкунайте","Розанова","Яковлева"],"director":"Кунин"})
+   db.films.insert({"film":"Жестокий романс","actors":["Михалков","Гузеева","Фрейндлих"],"director":"Михалков"})
+
+4. Наполни БД записями (по 3 записи в каждую коллекцию).
+
+  db.actors.insert({"name":"Михалков","films":["Жестокий романс","Утомленные солнцем","Статский советник"]})
+  db.actors.insert({"name":"Дапкунайте","films":["Интердевочка","Утомленные солнцем","Еще какой-нибудь фильм"]})
+  db.actors.insert({"name":"Меньшиков","films":["Статский советник","Утомленные солнцем","Покровские ворота"]})
+
+  db.directors.insert({"director":"Михалков","films":["Статский советник","Утомленные солнцем","Еще какой-нибудь фильм"]})
+  db.directors.insert({"director":"Кунин","films":["Интердевочка","Что-нибудь еще","Какое-то кино"]})
+  db.directors.insert({"director":"Спилберг","films":["Звездные войны-1","Звездные войны-2","Звездные войны-3"]})
+
+5. Выведи в консоль всех актёров отсортированных по имени в алфавитном порядке.
+
+  var actors=db.actors.find().toArray().map(el=>el.name)
+  var actors_sort=actors.sort()
+  actors_sort
+
+6.  Выведи в консоль **только названия** фильмов, в которых принимал участие первый актер из коллекции актеров (в предыдущем пункте ты уже получил список актеров, теперь тебе нужен `actors[0]`).
+
+  var firstActor=actors_sort[0]
+  var filmsFirstActor=db.films.find({actors:firstActor}).toArray().map(el=>el.film)
+
+7. Измени имя последнего режиссера. Присутствует ли его имя где-нибудь еще?
+
+   var arrayOfDirectors = db.directors.find().toArray()
+   var lastDirector = arrayOfDirectors[arrayOfDirectors.length - 1].director
+   db.directors.updateOne({director : lastDirector}, {$set: {"director" : "NewName"}})
+
+  var findFilmsLastDirectorMore=db.films.find({directors:lastDirector}).toArray()
+
+8. Удали последний добавленный в БД фильм.
+
+   var arrayOfFilms=db.films.find().toArray()
+   var lastFilm=arrayOfFilms[arrayOfFilms.length-1] 
+   db.films.deleteOne({"film": lastFilm.film})
+
+
+
+
+
